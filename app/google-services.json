@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "946431917249",
+    "project_id": "culinaryforumapp",
+    "storage_bucket": "culinaryforumapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946431917249:android:80748b23a82b2ec74fe840",
+        "android_client_info": {
+          "package_name": "com.example.culinaryforumapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "946431917249-etipcf1ksc35cf4ofbmhclsi3b2sjm0k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCO79sj4NpjtForchlRtZCV9H7wIEc14sE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "946431917249-etipcf1ksc35cf4ofbmhclsi3b2sjm0k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

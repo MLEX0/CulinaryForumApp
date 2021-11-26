@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="category_recipe">
+        <item>Первые блюда</item>
+        <item>Вторые блюда</item>
+        <item>Закуски</item>
+        <item>Салаты</item>
+        <item>Соусы, кремы</item>
+        <item>Напитки</item>
+        <item>Десерты</item>
+        <item>Выпечка</item>
+        <item>Безглютеновая выпечка</item>
+        <item>Торты</item>
+        <item>Заготовки на зиму</item>
+        <item>Блюда в мультиварке</item>
+        <item>Блюда в хлебопечке</item>
+        <item>Хлеб</item>
+        <item>Тесто</item>
+        <item>Блины и оладьи</item>
+        <item>Постные блюда</item>
+        <item>Полезные мелочи</item>
+    </string-array>
+</resources>

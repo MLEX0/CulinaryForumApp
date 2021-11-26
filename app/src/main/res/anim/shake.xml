@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+  >
+    <translate
+        android:toYDelta="5%p"
+        android:duration='3500'
+        android:repeatCount ="infinite"
+        android:repeatMode="reverse"
+        />
+    <translate
+        android:toYDelta="-5%p"
+        android:startOffset='3500'
+        android:duration='3500'
+        android:repeatCount ="infinite"
+        android:repeatMode="reverse"
+        />
+    <rotate
+        android:duration='3500'
+        android:fromDegrees="0"
+        android:toDegrees="5"
+        android:repeatCount ="infinite"
+        android:repeatMode="reverse"
+        />
+    <rotate
+        android:duration='3500'
+        android:fromDegrees="0"
+        android:startOffset='3500'
+        android:toDegrees="-5"
+        android:repeatCount ="infinite"
+        android:repeatMode="reverse"
+        />
+
+
+</set>
