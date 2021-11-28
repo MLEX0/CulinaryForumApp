@@ -62,6 +62,11 @@ public class ViewRecipeActivity extends AppCompatActivity {
     private String currentUserNick;
 
     private String currentFavoriteId;
+
+
+    private ValueEventListener favoritesValueEventListener;
+    private ValueEventListener commentEventListener;
+    private ValueEventListener userValueEventListenerRecipe;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,7 +123,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
     }
 
     private void GetCommentFromDB(){
-        ValueEventListener commentEventListener = new ValueEventListener() {
+        commentEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(listComments.size() > 0){listComments.clear();}
@@ -195,36 +200,41 @@ public class ViewRecipeActivity extends AppCompatActivity {
     }
 
     private void GetFavoriteDataFromDB(){
-        ValueEventListener favoritesValueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot ds : snapshot.getChildren()) {
-                    Favorite favorite = ds.getValue(Favorite.class);
+        if(Constants.openRecipe != null){
+            favoritesValueEventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for(DataSnapshot ds : snapshot.getChildren()) {
+                        Favorite favorite = ds.getValue(Favorite.class);
 
-                    if(favorite.userUID.equals(CurrentUser.getUid()) &&
-                            favorite.recipeID.equals(Constants.openRecipe.generateIdRecipe)){
+                        if(favorite.userUID.equals(CurrentUser.getUid()) &&
+                                favorite.recipeID.equals(Constants.openRecipe.generateIdRecipe)){
 
                             currentFavoriteId = favorite.generateFavoritesId;
                             IsFavorite();
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        };
-        FavoritesDatabase.addValueEventListener(favoritesValueEventListener);
+                }
+            };
+            FavoritesDatabase.addValueEventListener(favoritesValueEventListener);
+        } else {
+            finish();
+        }
     }
 
     private void GetUserDataFromDB() {
 
-        ValueEventListener userValueEventListenerRecipe = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds2 : dataSnapshot.getChildren()){
-                    User user = ds2.getValue(User.class);
+        if(Constants.openRecipe != null){
+            userValueEventListenerRecipe = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(DataSnapshot ds2 : dataSnapshot.getChildren()){
+                        User user = ds2.getValue(User.class);
 
                         if(user.Uid.equals(Constants.openRecipe.creatorUID)) {
                             assert user != null;
@@ -234,15 +244,18 @@ public class ViewRecipeActivity extends AppCompatActivity {
                             currentUserNick = user.NickName;
                         }
 
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        };
-        UserDataBase.addValueEventListener(userValueEventListenerRecipe);
+                }
+            };
+            UserDataBase.addValueEventListener(userValueEventListenerRecipe);
+        } else {
+            finish();
+        }
 
     }
 
@@ -384,6 +397,10 @@ public class ViewRecipeActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        CommentDataBase.removeEventListener(commentEventListener);
+        FavoritesDatabase.removeEventListener(favoritesValueEventListener);
+        UserDataBase.removeEventListener(userValueEventListenerRecipe);
+
         Constants.openRecipe = null;
     }
 }
