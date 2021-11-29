@@ -177,6 +177,7 @@ public class RegistrationAuthorizationActivity extends AppCompatActivity {
                                                    {
                                                        Intent intent_reg = new Intent(RegistrationAuthorizationActivity.this,MainFrameActivity.class);
                                                        startActivity(intent_reg);
+                                                       finish();
                                                    }
                                                }
                                            });
