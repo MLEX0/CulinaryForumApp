@@ -139,7 +139,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
                         i++;
                         View view = findViewById(R.id.ListViewComments);
                         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-                        height = (height * i);
+                        height = (height * i * 2);
                         layoutParams.height = height;
                         view.setLayoutParams(layoutParams);
                     }

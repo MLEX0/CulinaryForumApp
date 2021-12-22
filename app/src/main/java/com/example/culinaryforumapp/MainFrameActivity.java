@@ -36,6 +36,7 @@ import java.util.Locale;
 
 public class MainFrameActivity extends AppCompatActivity {
 
+
     private FirebaseAuth mAuth;
     private FirebaseUser CurrentUser;
 
@@ -96,12 +97,11 @@ public class MainFrameActivity extends AppCompatActivity {
         CurrentUser = mAuth.getCurrentUser();
 
         if(CurrentUser != null) {
-
             Constants.CURRENT_USER_NICK = CurrentUser.getEmail();
             Constants.openRecipe = null;
             //Toast.makeText(MainFrameActivity.this, CurrentUser.getUid(), Toast.LENGTH_SHORT).show();
-        }
-        else {
+
+        } else {
             finish();
         }
 
@@ -391,7 +391,27 @@ public class MainFrameActivity extends AppCompatActivity {
 
 
     public void onClickLogout(View view) {
-        mAuth.signOut();
+        String title = "Вы уверены?";
+        String message = "Выйти из аккаунта?";
+        String button1String = "Да";
+        String button2String = "Нет";
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainFrameActivity.this);
+        builder.setTitle(title);  // заголовок
+        builder.setMessage(message); // сообщение
+        builder.setPositiveButton(button1String, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                mAuth.signOut();
+                dialog.cancel();
+            }
+        });
+        builder.setNegativeButton(button2String, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        builder.setCancelable(true);
+        builder.show();
     }
 
     public void OnClickSortHome(View view){

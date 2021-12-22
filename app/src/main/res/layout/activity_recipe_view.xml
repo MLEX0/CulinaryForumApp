@@ -6,9 +6,53 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/CommentBottomLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#EFEFEF">
+
+        <ImageView
+            android:id="@+id/imageViewButtonSendComment"
+            android:layout_width="51dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:onClick="OnClickSendComment"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.894"
+            app:layout_constraintStart_toEndOf="@+id/editTextTextPersonName"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_send_24"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+        <EditText
+            android:id="@+id/editTextTextPersonName"
+            android:layout_width="254dp"
+            android:layout_height="46dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:ems="10"
+            android:hint="Комментарий"
+            android:inputType="textLongMessage"
+            android:textColor="@color/black"
+            android:textColorHighlight="@color/background"
+            android:textColorHint="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageViewButtonSendComment"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <ScrollView
+        android:id="@+id/scrollViewMainRecipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/CommentBottomLayout"
         tools:ignore="SpeakableTextPresentCheck">
 
         <LinearLayout
@@ -51,11 +95,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:maxWidth="140dp"
+                    android:singleLine="false"
                     android:text="Описание рецепта"
                     android:textColor="@color/black"
                     android:textSize="16sp"
-                    android:maxWidth="140dp"
-                    android:singleLine="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.176"
                     app:layout_constraintStart_toEndOf="@+id/imageViewViewActivityRecipeImage"
@@ -155,19 +199,21 @@
                     app:layout_constraintTop_toBottomOf="@+id/textViewViewActivityRecipeAuthorName"
                     app:layout_constraintVertical_bias="0.0"
                     tools:visibility="gone" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/CommentLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="visible">
+                android:visibility="visible"
+                tools:visibility="visible">
 
                 <TextView
                     android:id="@+id/textView8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="15dp"
                     android:text="Комментарии:"
                     android:textAlignment="textStart"
                     android:textColor="@color/black"
@@ -177,47 +223,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
-                    android:id="@+id/editTextTextPersonName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:ems="10"
-                    android:hint="Комментарий"
-                    android:inputType="textPersonName"
-                    android:textColor="@color/black"
-                    android:textColorHighlight="@color/background"
-                    android:textColorHint="@color/black"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.134"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView8"
-                    tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
-
-                <ImageView
-                    android:id="@+id/imageViewButtonSendComment"
-                    android:layout_width="50dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginTop="60dp"
-                    android:onClick="OnClickSendComment"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.08"
-                    app:layout_constraintStart_toEndOf="@+id/editTextTextPersonName"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_baseline_send_24"
-                    tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
-
                 <ListView
                     android:id="@+id/ListViewComments"
                     android:layout_width="wrap_content"
                     android:layout_height="500dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="10dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
+                    app:layout_constraintTop_toBottomOf="@+id/textView8"
+                    app:layout_constraintVertical_bias="1.0" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </ScrollView>
+
 </RelativeLayout>
