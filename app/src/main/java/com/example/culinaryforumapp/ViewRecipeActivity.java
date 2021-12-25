@@ -72,6 +72,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_view);
 
+        //Находим все объекты для отображения рецепта
         viewRecipeName = findViewById(R.id.textViewViewActivityRecipeName);
         ViewRecipeDescription = findViewById(R.id.textViewViewActivityRecipeDescription);
         viewRecipeRecipe = findViewById(R.id.textViewViewActivityRecipeRecipe);
@@ -83,15 +84,18 @@ public class ViewRecipeActivity extends AppCompatActivity {
         commentText = findViewById(R.id.editTextTextPersonName);
         commentLayout = findViewById(R.id.CommentLayout);
 
+        //Инициализируем адаптер комментариев
         listViewComments = findViewById(R.id.ListViewComments);
         listComments = new ArrayList<Comment>();
         commentAdapter = new CommentListAdapter(ViewRecipeActivity.this, listComments);
         listViewComments.setAdapter(commentAdapter);
         listViewComments.setClickable(false);
 
+        //Проверяем есть ли данные с рецептом, который должен быть открыт
         if(Constants.openRecipe == null) {
             finish();
         } else {
+            //Инициализируем БД с комментариями и пользователями
             databaseUser = FirebaseDatabase.getInstance("https://culinaryforumapp-default-rtdb.europe-west1.firebasedatabase.app");
             UserDataBase = databaseUser.getReference(Constants.USER_KEY);
             FavoritesDatabase = databaseUser.getReference(Constants.FAVORITE_KEY);
@@ -101,6 +105,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
             mAuth = FirebaseAuth.getInstance();
             CurrentUser = mAuth.getCurrentUser();
 
+            //Проверяем является ли авторизированнный пользователь владельцем рецепта
             if(CurrentUser.getUid().equals(Constants.openRecipe.creatorUID)) {
                 canDelete();
             }
@@ -122,6 +127,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
     }
 
+    //Добаляем слушатель для комментариев
     private void GetCommentFromDB(){
         commentEventListener = new ValueEventListener() {
             @Override
@@ -133,9 +139,11 @@ public class ViewRecipeActivity extends AppCompatActivity {
                     Comment comment = ds.getValue(Comment.class);
 
                     int height = 500;
+                    //Заполняем массив комментариев для этого рецепта
                     if(comment.generatedRecipeId.equals(Constants.openRecipe.generateIdRecipe)) {
                         assert comment != null;
                         listComments.add(comment);
+                        //Эта чертовщина нужна для изменения размеров ListView комментариев
                         i++;
                         View view = findViewById(R.id.ListViewComments);
                         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
@@ -155,10 +163,13 @@ public class ViewRecipeActivity extends AppCompatActivity {
         CommentDataBase.addValueEventListener(commentEventListener);
     }
 
+    //Метод отправки комментария
     public void OnClickSendComment(View view){
+        //Проверяем не пустой ли рецепт
         if(Constants.openRecipe != null) {
             if(!commentText.getText().toString().isEmpty()){
 
+                //Эта штука нужна для получения времени отправки комментария, оно храниться как String
                 Calendar rightNow = Calendar.getInstance();
                 // offset to add since we're not UTC
                 long offset = rightNow.get(Calendar.ZONE_OFFSET) +
@@ -172,15 +183,19 @@ public class ViewRecipeActivity extends AppCompatActivity {
                 else {
                     betweenStr = ":";
                 }
+
                 String DateTime = rightNow.get(Calendar.DATE) + "/" + rightNow.get(Calendar.MONTH) + "/" +
                         rightNow.get(Calendar.YEAR) +" "+ rightNow.get(Calendar.HOUR_OF_DAY) + betweenStr + rightNow.get(Calendar.MINUTE);
                 Random rnd = new Random();
 
+                //Формируем новый комментарий для отправки его в БД
+                //Также формируем для него уникальный ID для того, чтобы можно было его потом удалить
                 Comment newComment = new Comment(CommentDataBase.getKey(),
                         CurrentUser.getUid().hashCode() + "" + Constants.openRecipe.generateIdRecipe.hashCode() + "" + sinceMidnight + "" + rnd.nextInt() + "" + rnd.nextInt() + "",
                         Constants.openRecipe.generateIdRecipe.toString(),
                         DateTime, CurrentUser.getUid().toString(), Constants.CURRENT_USER_NICK.toString(), commentText.getText().toString());
 
+                //Отправляем его в БД и проверяем отправлен ли он
                 CommentDataBase.push().setValue(newComment).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -199,6 +214,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
         }
     }
 
+    //Проверяем есть ли этот рецепт в избранном пользователя
     private void GetFavoriteDataFromDB(){
         if(Constants.openRecipe != null){
             favoritesValueEventListener = new ValueEventListener() {
@@ -227,6 +243,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
         }
     }
 
+    //Получаем никнейм автора рецепта
     private void GetUserDataFromDB() {
 
         if(Constants.openRecipe != null){
@@ -259,6 +276,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
 
     }
 
+    //Изменение состояния кнопки 'Добавить в избранное/Удалить их избранного'
     public void IsFavorite() {
         imageIsFavorite.setVisibility(View.VISIBLE);
         imageNotFavorite.setVisibility(View.INVISIBLE);
@@ -269,9 +287,11 @@ public class ViewRecipeActivity extends AppCompatActivity {
         imageNotFavorite.setVisibility(View.VISIBLE);
     }
 
+    //Метод добавления рецепта в избранное
     public void AddInFavorites(View view){
         if(Constants.openRecipe != null) {
 
+            //Получаем дату и время чтобы уникальный ID избранного не повторялся
             Calendar rightNow = Calendar.getInstance();
             // offset to add since we're not UTC
             long offset = rightNow.get(Calendar.ZONE_OFFSET) +
@@ -280,10 +300,14 @@ public class ViewRecipeActivity extends AppCompatActivity {
                     (24 * 60 * 60 * 1000);
             Random rnd = new Random();
 
+
+            //Формируем запись избранного для отправки её в БД
+            //Также формируем для неё уникальный ID для того, чтобы можно было ёё потом удалить
             Favorite favorite = new Favorite(FavoritesDatabase.getKey(), CurrentUser.getUid(),
                     Constants.openRecipe.generateIdRecipe, CurrentUser.getUid().hashCode() + ""
                     + Constants.openRecipe.generateIdRecipe.hashCode() + "" + sinceMidnight + "" + rnd.nextInt() + "" + rnd.nextInt());
 
+            //Отправляем запись в БД
             FavoritesDatabase.push().setValue(favorite).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -296,9 +320,12 @@ public class ViewRecipeActivity extends AppCompatActivity {
         }
     }
 
+
     public void DeleteFromFavorites(View view) {
         if(Constants.openRecipe != null){
+
             DatabaseReference ref = FirebaseDatabase.getInstance("https://culinaryforumapp-default-rtdb.europe-west1.firebasedatabase.app").getReference();
+            //Формируем запрос для удаления и ищем его по заранее полученному ID
             Query favoritesQuery = ref.child(Constants.FAVORITE_KEY).orderByChild("generateFavoritesId").equalTo(currentFavoriteId);
             favoritesQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -328,10 +355,12 @@ public class ViewRecipeActivity extends AppCompatActivity {
         }
     }
 
+    //Открываем возможность удалить рецепт
     public void canDelete() {
         buttonDeleteThisRecipe.setVisibility(View.VISIBLE);
     }
 
+    //Метод удаления рецепта
     public void DeleteThisRecipeFromDB(View view){
         if(Constants.openRecipe != null){
 
@@ -348,6 +377,7 @@ public class ViewRecipeActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int id) {
                     buttonDeleteThisRecipe.setText("Удаление...");
                     buttonDeleteThisRecipe.setActivated(false);
+                    //Формируем запрос на удаление рецепта и проверяем его выполнение
                     DatabaseReference ref = FirebaseDatabase.getInstance("https://culinaryforumapp-default-rtdb.europe-west1.firebasedatabase.app").getReference();
                     Query recipeDelQuery = ref.child(Constants.RECIPE_KEY).orderByChild("generateIdRecipe").equalTo(Constants.openRecipe.generateIdRecipe);
                     recipeDelQuery.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -397,10 +427,12 @@ public class ViewRecipeActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //Удаляем слушатели во избежание ошибок
         CommentDataBase.removeEventListener(commentEventListener);
         FavoritesDatabase.removeEventListener(favoritesValueEventListener);
         UserDataBase.removeEventListener(userValueEventListenerRecipe);
 
+        //Обнуляем открытый рецепт
         Constants.openRecipe = null;
     }
 }

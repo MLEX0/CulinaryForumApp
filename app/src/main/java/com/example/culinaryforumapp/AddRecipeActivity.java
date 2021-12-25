@@ -58,19 +58,24 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     private void Init(){
+        //Находим поля для ввода и спинер
         recipeName = findViewById(R.id.editTextRecipeName);
         recipeDescription = findViewById(R.id.editTextRecipeDescription);
         thisRecipe = findViewById(R.id.editTextThisRecipe);
         spinnerCategory = findViewById(R.id.categorySpinner);
         userName = findViewById(R.id.textViewUserName);
 
+        //Получение БД с рецептами
         databaseRecipe = FirebaseDatabase.getInstance("https://culinaryforumapp-default-rtdb.europe-west1.firebasedatabase.app");
         RecipeDataBase = databaseRecipe.getReference(Constants.RECIPE_KEY);
+
+        //Заполнение спинера по категориям
         categoryArray = getResources().getStringArray(R.array.category_recipe);
         spinnerAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, categoryArray);
         spinnerCategory.setAdapter(spinnerAdapter);
     }
 
+    //Метод добавления рецепта
     public void OnClickButtonSave(View view) {
 
         if(recipeName.getText().toString().isEmpty()) {
@@ -100,6 +105,7 @@ public class AddRecipeActivity extends AppCompatActivity {
                     thisRecipe.getText().toString(), spinnerCategory.getSelectedItem().toString(),
                     CurrentUserUid.hashCode() + "" + sinceMidnight + "" + rnd.nextInt() + "" + rnd.nextInt());
 
+            //Отправка рецепта в БД
             RecipeDataBase.push().setValue(newRecipe).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
@@ -116,6 +122,7 @@ public class AddRecipeActivity extends AppCompatActivity {
 
     }
 
+    //Выход из этого окна
     public void OnClickCancel(View view) {
         finish();
     }

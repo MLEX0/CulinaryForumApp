@@ -46,6 +46,7 @@ public class RegistrationAuthorizationActivity extends AppCompatActivity {
 
         Init();
 
+        //Слушатель входа в приложение
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -59,6 +60,7 @@ public class RegistrationAuthorizationActivity extends AppCompatActivity {
             }
         };
 
+        //Если уже есть авторизованный пользователь, то переходим на главное окно
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null)
         {
@@ -71,8 +73,10 @@ public class RegistrationAuthorizationActivity extends AppCompatActivity {
 
     }
 
+    //Метод инициализации
     private void Init()
     {
+        //Находим лайауты авторизации и регистрации, чтобы меняться между ними
         LinearEnter = findViewById(R.id.LinearLayoutEnter);
         LinearRegistration = findViewById(R.id.LinearLayoutRegistration);
 
@@ -90,6 +94,7 @@ public class RegistrationAuthorizationActivity extends AppCompatActivity {
 
     }
 
+    //Метод авторизации по Email и паролю
     public void OnClickAuthorization(View view) {
 
         String Email = textEmail.getText().toString();
@@ -115,6 +120,8 @@ public class RegistrationAuthorizationActivity extends AppCompatActivity {
                         Toast.makeText(RegistrationAuthorizationActivity.this,
                                 "Авторизация успешна!", Toast.LENGTH_LONG).show();
 
+
+                        //Переход на новое окно при успешной авторизации
                         Intent intent = new Intent(RegistrationAuthorizationActivity.this,MainFrameActivity.class);
                         startActivity(intent);
                     }
@@ -124,6 +131,7 @@ public class RegistrationAuthorizationActivity extends AppCompatActivity {
 
     }
 
+    //Метод регистрации
     public void OnClickRegistration(View view)
     {
         String EmailReg = textEmailReg.getText().toString();
@@ -175,6 +183,7 @@ public class RegistrationAuthorizationActivity extends AppCompatActivity {
                                                public void onComplete(@NonNull Task<Void> task) {
                                                    if(task.isSuccessful())
                                                    {
+                                                       //Переход на новое окно при успешной регистрации
                                                        Intent intent_reg = new Intent(RegistrationAuthorizationActivity.this,MainFrameActivity.class);
                                                        startActivity(intent_reg);
                                                        finish();
@@ -194,6 +203,7 @@ public class RegistrationAuthorizationActivity extends AppCompatActivity {
 
     }
 
+    //Метод изменения авторизации на регистрацию
     public void OnClickChangeToRegistration(View view) {
         LinearEnter.setVisibility(View.INVISIBLE);
         LinearRegistration.setVisibility(View.VISIBLE);
@@ -202,6 +212,7 @@ public class RegistrationAuthorizationActivity extends AppCompatActivity {
         textPassword.setText("");
     }
 
+    //Метод изменения регистрации на авторизацию
     public void OnClickChangeToEnter(View view) {
         LinearRegistration.setVisibility(View.INVISIBLE);
         LinearEnter.setVisibility(View.VISIBLE);

@@ -51,6 +51,7 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
         TextView dateOfSend = convertView.findViewById(R.id.dateOfSend);
         Button deleteComment = convertView.findViewById(R.id.buttonDeleteComment);
 
+        //Возможность удаления комментария, если авторизированный пользователь его автор
         if(comment.userUID.equals(CurrentUser.getUid())){
             deleteComment.setVisibility(View.VISIBLE);
             deleteComment.setOnClickListener(new View.OnClickListener() {

@@ -96,11 +96,11 @@ public class MainFrameActivity extends AppCompatActivity {
 
         CurrentUser = mAuth.getCurrentUser();
 
+        //Проверяем авторизирован ли пользователь
         if(CurrentUser != null) {
             Constants.CURRENT_USER_NICK = CurrentUser.getEmail();
             Constants.openRecipe = null;
             //Toast.makeText(MainFrameActivity.this, CurrentUser.getUid(), Toast.LENGTH_SHORT).show();
-
         } else {
             finish();
         }
@@ -117,6 +117,7 @@ public class MainFrameActivity extends AppCompatActivity {
 
         AddSearchToFavorites();
 
+        //Устанавливаем данные пользователя на странице профиля
         profilePageNickName.setText(Constants.CURRENT_USER_NICK);
         profilePageEmail.setText(CurrentUser.getEmail());
     }
@@ -126,7 +127,7 @@ public class MainFrameActivity extends AppCompatActivity {
         BottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
+                //Постраничная навигация при нажатии на кнопку меню
                 switch(item.getItemId()) {
                     case R.id.nav_home:
                         showHomeLayout();
@@ -145,8 +146,10 @@ public class MainFrameActivity extends AppCompatActivity {
         });
     }
 
+    //Слушатель авторизации пользователя
     private void SetAuthStateListener()
     {
+        //При выходе из аккаунта пользователь попадает на страницу авторизации
         mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -161,27 +164,32 @@ public class MainFrameActivity extends AppCompatActivity {
         });
     }
 
-
+    //Метод инициализации приложения
     private void Init() {
 
+
         mAuth = FirebaseAuth.getInstance();
+
         BottomNav = findViewById(R.id.bottom_navigation);
         addRecipeFloatingButton = findViewById(R.id.floatingActionButtonAddRecipe);
 
-
+        //Находим лайауты страниц, чтобы потом скрывать их при переходе между 'окнами'
         homeLayout = findViewById(R.id.homeConstraintLayout);
         favoriteLayout = findViewById(R.id.favoritesConstraintLayout);
         profileLayout = findViewById(R.id.profileConstraintLayout);
 
+        //Находим лайауты верхнего меню на страницю, чтобы потом скрывать при переходе между 'окнами'
         homeSearchMenu = findViewById(R.id.LinearLayoutHomeSeacrhMenu);
         favoriteSearchMenu = findViewById(R.id.LinearLayoutFavoriteSeacrhMenu);
         profileMenu = findViewById(R.id.ConstraintLayoutProfileUpMenu);
 
+        //Получаем референсы от всех хранилищ
         databaseRecipe = FirebaseDatabase.getInstance("https://culinaryforumapp-default-rtdb.europe-west1.firebasedatabase.app");
         RecipeDataBase = databaseRecipe.getReference(Constants.RECIPE_KEY);
         UserDataBase = databaseRecipe.getReference(Constants.USER_KEY);
         FavoriteDataBase = databaseRecipe.getReference(Constants.FAVORITE_KEY);
 
+        //Инициализируем адаптеры для ListView
         listViewRecipeHome = findViewById(R.id.listViewRecipeHome);
         listRecipeHome = new ArrayList<Recipe>();
         recipeAdapterHome = new RecipeListAdapter(MainFrameActivity.this, listRecipeHome);
@@ -202,27 +210,32 @@ public class MainFrameActivity extends AppCompatActivity {
 
         listFavoriteUser = new ArrayList<Favorite>();
 
+        //Инициализируем лист для поиска ника пользователя
         userArrayList = new ArrayList<User>();
         UserNickIsNull = true;
 
+        //Находим текстовые поля, в которых должны отображаться данные пользователя
         profilePageNickName = findViewById(R.id.textViewProfilePageNickName);
         profilePageEmail = findViewById(R.id.textViewProfilePageEmail);
 
+        //Находим текстовые поля для поиска
         searchInHomeText = findViewById(R.id.editTextSearchHome);
         searchInFavoriteText = findViewById(R.id.editTextSearchFavorite);
-
+        //Ставим переменные, по которым идёт проверка на категорию товара, на положение без категории
         selectedCategoryForFavorite = "Нет";
         selectedCategoryForHome = "Нет";
 
     }
 
     public void getFavoritesFromDB() {
+        //Устанавливаем слушатель для изменения избранного
         ValueEventListener vListenerFavorites = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(listFavoriteUser.size() > 0){listFavoriteUser.clear();}
                 for(DataSnapshot ds : snapshot.getChildren()){
                     Favorite favorite = ds.getValue(Favorite.class);
+                    //Заполняем массив только избранным текущего пользователя
                     if(favorite.userUID.equals(mAuth.getCurrentUser().getUid())) {
                         assert favorite != null;
                         listFavoriteUser.add(favorite);
@@ -240,18 +253,22 @@ public class MainFrameActivity extends AppCompatActivity {
         FavoriteDataBase.addValueEventListener(vListenerFavorites);
     }
 
+    //Метод для отслеживания изменений данных с рецептами
     public void getDataFromDB(){
 
         ValueEventListener vListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                    //Очищаем все массивы
                     if(listRecipeHome.size() > 0){listRecipeHome.clear();}
                     if(listRecipeProfile.size() > 0){listRecipeProfile.clear();}
                     if(listRecipeFavorite.size() > 0){listRecipeFavorite.clear();}
+                    //Перебираем данные
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
                     Recipe recipe = ds.getValue(Recipe.class);
 
+                    //Заполняем массив всех рецептов с сортировкой
                     if(selectedCategoryForHome.equals("Нет")) {
                         assert recipe != null;
                         listRecipeHome.add(recipe);
@@ -260,21 +277,28 @@ public class MainFrameActivity extends AppCompatActivity {
                             assert recipe != null;
                             listRecipeHome.add(recipe);
                     }
+
+                    //Заполняем лист с рецептами пользователя
                     if(recipe.creatorUID.hashCode() == CurrentUser.getUid().hashCode())
                     {
                         assert recipe != null;
                         listRecipeProfile.add(recipe);
                     }
-                    for(Favorite favorite : listFavoriteUser) {
-                        if(favorite.recipeID.equals(recipe.generateIdRecipe)){
-                            if(selectedCategoryForFavorite.equals("Нет")){
-                                assert recipe != null;
-                                listRecipeFavorite.add(recipe);
-                            } else if(recipe.categoryName.equals(selectedCategoryForFavorite)) {
-                                assert recipe != null;
-                                listRecipeFavorite.add(recipe);
-                            }
 
+                    // перебираем массив с избраннм пользователя если массив с избранным не пустой
+                    if(!listFavoriteUser.isEmpty()){
+                        for(Favorite favorite : listFavoriteUser) {
+                            if(favorite.recipeID.equals(recipe.generateIdRecipe)){
+                                //Если есть сортировка, то проверяем по категориям
+                                if(selectedCategoryForFavorite.equals("Нет")){
+                                    assert recipe != null;
+                                    listRecipeFavorite.add(recipe);
+                                } else if(recipe.categoryName.equals(selectedCategoryForFavorite)) {
+                                    assert recipe != null;
+                                    listRecipeFavorite.add(recipe);
+                                }
+
+                            }
                         }
                     }
                 }
@@ -287,6 +311,7 @@ public class MainFrameActivity extends AppCompatActivity {
 
             }
         };
+        //Удаляем и добавляем слушатель, чтобы менять значения при изменении выбранной категории
         RecipeDataBase.removeEventListener(vListener);
         RecipeDataBase.addValueEventListener(vListener);
         recipeAdapterFavorite.notifyDataSetChanged();
@@ -297,6 +322,7 @@ public class MainFrameActivity extends AppCompatActivity {
         ValueEventListener userValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //Пытаемся найти имя пользователя в БД
                 if(UserNickIsNull == true)
                 {
                     if(userArrayList.size() > 0)userArrayList.clear();
@@ -321,6 +347,7 @@ public class MainFrameActivity extends AppCompatActivity {
         UserDataBase.addValueEventListener(userValueEventListener);
     }
 
+    // Добавляем переход к рецепту при нажатии на него на всех 'окнах'
     private void setOnClickItem(){
         listViewRecipeHome.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -359,6 +386,7 @@ public class MainFrameActivity extends AppCompatActivity {
         });
     }
 
+    //Методы для переключения меджду лайаутами через меню
     public void showHomeLayout(){
         profileMenu.setVisibility(View.INVISIBLE);
         addRecipeFloatingButton.setVisibility(View.VISIBLE);
@@ -390,6 +418,7 @@ public class MainFrameActivity extends AppCompatActivity {
     }
 
 
+    // Кнопка выхода из приложения
     public void onClickLogout(View view) {
         String title = "Вы уверены?";
         String message = "Выйти из аккаунта?";
@@ -414,6 +443,7 @@ public class MainFrameActivity extends AppCompatActivity {
         builder.show();
     }
 
+    //Выбор категории по нажатию на кнопку для вкладки 'Дом'
     public void OnClickSortHome(View view){
         AlertDialog.Builder b = new AlertDialog.Builder(MainFrameActivity.this);
         b.setTitle("Выберите категрию");
@@ -433,6 +463,7 @@ public class MainFrameActivity extends AppCompatActivity {
         b.show();
     }
 
+    //Выбор категории по нажатию на кнопку для вкладки 'Избранное'
     public void OnClickSortFavorites(View view){
         AlertDialog.Builder b = new AlertDialog.Builder(MainFrameActivity.this);
         b.setTitle("Выберите категрию");
@@ -452,6 +483,7 @@ public class MainFrameActivity extends AppCompatActivity {
         b.show();
     }
 
+    //Метод поиска во всех рецептах
     private void AddSearchToHome() {
         searchInHomeText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -481,6 +513,7 @@ public class MainFrameActivity extends AppCompatActivity {
         });
     }
 
+    //Метод поиска в избранном
     private void AddSearchToFavorites() {
         searchInFavoriteText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -510,6 +543,7 @@ public class MainFrameActivity extends AppCompatActivity {
         });
     }
 
+    //Переход на страницу добавления рецепта при нажатии на кнопку
     public void AddRecipe(View view){
         Intent addRecipe = new Intent(MainFrameActivity.this, AddRecipeActivity.class);
         addRecipe.putExtra(Constants.USER_UID, CurrentUser.getUid());
